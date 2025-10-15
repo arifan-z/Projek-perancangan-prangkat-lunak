@@ -13,4 +13,5 @@ Route::get('lang/{locale}', function ($locale) {
 
 Route::get('/', [PageController::class, 'beranda'])->name('beranda');
 Route::get('/beranda', [PageController::class, 'beranda'])->name('beranda');
-Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/status', [PageController::class, 'status'])->name('status');
+Route::get('/informasi', [PageController::class, 'informasi'])->name('informasi');
