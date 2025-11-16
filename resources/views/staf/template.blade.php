@@ -26,7 +26,7 @@
         <div @click="sidebarOpen = false" x-show="sidebarOpen" class="fixed inset-0 bg-black/30 z-10 md:hidden"></div>
 
         {{-- Sidebar --}}
-        @include('admin.sidebar')
+        @include('staf.sidebar')
 
         {{-- Konten Utama --}}
         <div class="flex-1">

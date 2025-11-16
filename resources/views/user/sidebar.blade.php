@@ -15,16 +15,16 @@
 
     <nav class="flex-grow space-y-2">
         <a href="{{ route('user.dashboard') }}"
-            class="flex items-center px-4 py-3 rounded-lg {{ request()->is('user/dashboard-user') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
+            class="flex items-center px-4 py-3 rounded-lg {{ request()->is('user/dashboard') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
             <i class="fas fa-tachometer-alt w-6 mr-3"></i> Dashboard
         </a>
         <a href="{{ route('user.laporan.index') }}"
             class="flex items-center px-4 py-3 rounded-lg {{ request()->is('user/laporan') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
             <i class="fas fa-file-alt w-6 mr-3"></i> Laporan
         </a>
-        <a href="{{ route('user.informasi.index') }}"
-            class="flex items-center px-4 py-3 rounded-lg {{ request()->is('user/informasi') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
-            <i class="fas fa-user w-6 mr-3"></i> Informasi
+        <a href="{{ route(Auth::user()->role . '.informasi.index') }}"
+            class="flex items-center px-4 py-3 rounded-lg {{ request()->is('admin/informasi') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
+            <i class="fas fa-user w-6 mr-3"></i> Informasi Akademik
         </a>
         <a href="{{ route(Auth::user()->role . '.profile.show') }}"
             class="flex items-center px-4 py-3 rounded-lg {{ request()->is('user/profile') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">

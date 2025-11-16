@@ -14,19 +14,28 @@
     </div>
 
     <nav class="flex-grow space-y-2">
-        <a href="{{ route('admin.dashboard') }}"
-            class="flex items-center px-4 py-3 rounded-lg {{ request()->is('admin/dashboard') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
+        <a href="{{ route('staf.dashboard') }}"
+            class="flex items-center px-4 py-3 rounded-lg {{ request()->is('staf/dashboard') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
             <i class="fas fa-tachometer-alt w-6 mr-3"></i> Dashboard
         </a>
-        <a href=""
-            class="flex items-center px-4 py-3 rounded-lg {{ request()->is('admin/laporan') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
+
+        <a href="{{ route('staf.laporan.index') }}"
+            class="flex items-center px-4 py-3 rounded-lg {{ request()->is('staf/laporan*') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
             <i class="fas fa-file-alt w-6 mr-3"></i> Laporan
         </a>
-        <a href="{{ route('profile.show') }}"
-            class="flex items-center px-4 py-3 rounded-lg {{ request()->is('admin/profile') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
+
+        <a href="{{ route('staf.profile.show') }}"
+            class="flex items-center px-4 py-3 rounded-lg {{ request()->is('staf/profile') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
             <i class="fas fa-user w-6 mr-3"></i> Profil
         </a>
+
+        <a href="{{ route(Auth::user()->role . '.informasi.index') }}"
+            class="flex items-center px-4 py-3 rounded-lg {{ request()->is('admin/informasi') ? 'bg-emerald-700' : 'hover:bg-white/10' }}">
+            <i class="fas fa-user w-6 mr-3"></i> Informasi Akademik
+        </a>
     </nav>
+
+
 
     <div class="mt-auto">
         <form method="POST" action="{{ route('logout') }}">

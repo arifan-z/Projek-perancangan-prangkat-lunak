@@ -13,9 +13,8 @@ class InformasiController extends Controller
     {
         $user = Auth::user();
 
-        // ====== VIEW BERDASARKAN ROLE ======
-        if ($user->role == 'admin' || $user->role == 'staff') {
-            // ADMIN & STAFF (FULL FITUR)
+        // ADMIN
+        if ($user->role == 'admin') {
             return view('admin.informasi', [
                 'informasi' => Informasi::orderBy('created_at', 'desc')->get(),
                 'countPenting' => Informasi::where('jenis', 'PENTING')->count(),
@@ -24,11 +23,22 @@ class InformasiController extends Controller
             ]);
         }
 
-        // USER — HANYA MELIHAT
+        // STAF
+        if ($user->role == 'staf') {
+            return view('staf.informasi', [
+                'informasi' => Informasi::orderBy('created_at', 'desc')->get(),
+                'countPenting' => Informasi::where('jenis', 'PENTING')->count(),
+                'countDokumen' => Informasi::where('jenis', 'DOKUMEN')->count(),
+                'countSemua' => Informasi::count(),
+            ]);
+        }
+
+        // USER (read-only)
         return view('user.informasi', [
             'informasi' => Informasi::orderBy('created_at', 'desc')->get()
         ]);
     }
+
     public function indexUser()
     {
         return view('user.informasi', [
@@ -58,7 +68,7 @@ class InformasiController extends Controller
     public function store(Request $request)
     {
         // CEK ROLE — USER TIDAK BOLEH MENAMBAH
-        if (!in_array(Auth::user()->role, ['admin', 'staff'])) {
+        if (!in_array(Auth::user()->role, ['admin', 'staf'])) {
             return abort(403, 'Anda tidak memiliki hak akses.');
         }
 
@@ -79,7 +89,7 @@ class InformasiController extends Controller
     // ====== EDIT (RETURN JSON UNTUK POPUP) ======
     public function edit($id)
     {
-        if (!in_array(Auth::user()->role, ['admin', 'staff'])) {
+        if (!in_array(Auth::user()->role, ['admin', 'staf'])) {
             return abort(403, 'Tidak boleh edit.');
         }
 
@@ -89,7 +99,7 @@ class InformasiController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (!in_array(Auth::user()->role, ['admin', 'staff'])) {
+        if (!in_array(Auth::user()->role, ['admin', 'staf'])) {
             return abort(403, 'Tidak boleh update.');
         }
 
@@ -110,7 +120,7 @@ class InformasiController extends Controller
 
     public function destroy($id)
     {
-        if (!in_array(Auth::user()->role, ['admin', 'staff'])) {
+        if (!in_array(Auth::user()->role, ['admin', 'staf'])) {
             return abort(403, 'Tidak boleh hapus.');
         }
 

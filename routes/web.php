@@ -10,6 +10,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\InformasiController;
+use App\Http\Controllers\PenggunaController;
+
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTES
@@ -98,37 +100,8 @@ Route::prefix('staf')->name('staf.')->middleware(['auth', 'role:staf'])->group(f
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    /*
-    | INFORMASI (STAF)
-    | hanya lihat & detail seperti user
-    */
-    Route::get('/informasi', [InformasiController::class, 'indexStaf'])
-        ->name('informasi.index');
 
-    Route::get('/informasi/{id}', [InformasiController::class, 'show'])
-        ->name('informasi.show');
-
-    // Laporan staf
-    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-    Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
-    Route::get('/laporan/{id}', [LaporanController::class, 'show'])->name('laporan.show');
-    Route::put('/laporan/{id}', [LaporanController::class, 'update'])->name('laporan.update');
-    Route::delete('/laporan/{id}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
-});
-
-
-// ==================== ADMIN ====================
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | INFORMASI (ADMIN)
-    |--------------------------------------------------------------------------
-    */
+    // informasi
     Route::get('/informasi', [InformasiController::class, 'index'])
         ->name('informasi.index');
 
@@ -154,6 +127,46 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/laporan/{id}', [LaporanController::class, 'show'])->name('laporan.show');
     Route::put('/laporan/{id}', [LaporanController::class, 'update'])->name('laporan.update');
     Route::delete('/laporan/{id}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
+});
+
+
+// ==================== ADMIN ====================
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    //informasi
+    Route::get('/informasi', [InformasiController::class, 'index'])
+        ->name('informasi.index');
+
+    Route::get('/informasi/create', [InformasiController::class, 'create'])
+        ->name('informasi.create');
+
+    Route::post('/informasi', [InformasiController::class, 'store'])
+        ->name('informasi.store');
+
+    Route::get('/informasi/{id}/edit', [InformasiController::class, 'edit'])
+        ->name('informasi.edit');
+
+    Route::put('/informasi/{id}', [InformasiController::class, 'update'])
+        ->name('informasi.update');
+
+    Route::delete('/informasi/{id}', [InformasiController::class, 'destroy'])
+        ->name('informasi.destroy');
+
+
+    // Laporan
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
+    Route::get('/laporan/{id}', [LaporanController::class, 'show'])->name('laporan.show');
+    Route::put('/laporan/{id}', [LaporanController::class, 'update'])->name('laporan.update');
+    Route::delete('/laporan/{id}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
+
+    // PENGGUNA 
+    Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna');
+    Route::put('/pengguna/{id}/role', [PenggunaController::class, 'updateRole'])->name('pengguna.updateRole');
+    Route::delete('/pengguna/{id}', [PenggunaController::class, 'hapus'])->name('pengguna.destroy');
 });
 
 

@@ -15,6 +15,11 @@ class LaporanController extends Controller
     {
         $user = Auth::user();
 
+        $laporanBaru = Laporan::where('status', 'menunggu')->count();
+        $laporanDiproses = Laporan::where('status', 'diproses')->count();
+        $laporanSelesai = Laporan::where('status', 'selesai')->count();
+        $totalLaporan = Laporan::count();
+
         $filter   = $request->get('filter', 'semua');
         $kategori = $request->get('kategori');
         $sort     = $request->get('sort', 'desc'); // default urutan terbaru
@@ -54,7 +59,11 @@ class LaporanController extends Controller
             'user',
             'filter',
             'kategori',
-            'sort'
+            'sort',
+            'laporanBaru',
+            'laporanDiproses',
+            'laporanSelesai',
+            'totalLaporan'
         ));
     }
 

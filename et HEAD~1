@@ -1,0 +1,392 @@
+[33mcommit 588983950b49fc87da5fb09b32dffade14f24846[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfitur/informasi-admin[m[33m, [m[1;32mmain[m[33m)[m
+Author: arifan-z <arifan.220170173@mhs.unimal.ac.id>
+Date:   Sun Nov 16 22:20:49 2025 +0700
+
+    Menambahkan fitur informasi admin lengkap
+
+[1mdiff --git a/app/Http/Controllers/DashboardController.php b/app/Http/Controllers/DashboardController.php[m
+[1mindex 117c3c1..5d4602c 100644[m
+[1m--- a/app/Http/Controllers/DashboardController.php[m
+[1m+++ b/app/Http/Controllers/DashboardController.php[m
+[36m@@ -4,6 +4,8 @@[m
+ [m
+ use Illuminate\Support\Facades\Auth;[m
+ use App\Models\Laporan;[m
+[32m+[m[32muse App\Models\User;[m
+[32m+[m[32muse App\Models\Informasi;[m
+ [m
+ class DashboardController extends Controller[m
+ {[m
+[36m@@ -15,20 +17,41 @@[m [mpublic function index()[m
+             return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');[m
+         }[m
+ [m
+[31m-        // 🔹 Jika admin → tampilkan dashboard admin[m
+[32m+[m[32m        // ====== DATA COUNT UNTUK ADMIN & STAF ======[m
+[32m+[m[32m        $arsip = Laporan::where('status', 'selesai')->count();[m
+[32m+[m[32m        $pengguna = User::where('role', 'user')->count();[m
+[32m+[m[32m        $totalLaporan = Laporan::count();[m
+[32m+[m[32m        $totalInformasi = Informasi::count();[m
+[32m+[m
+[32m+[m[32m        // 🔹 Jika admin → tampilkan dashboard admin + data count[m
+         if ($user->role === 'admin') {[m
+             $laporans = Laporan::latest()->get(); // Admin bisa melihat semua[m
+[31m-            return view('admin.dashboard', compact('user', 'laporans'));[m
+[32m+[m[32m            return view('admin.dashboard', compact([m
+[32m+[m[32m                'user',[m
+[32m+[m[32m                'laporans',[m
+[32m+[m[32m                'arsip',[m
+[32m+[m[32m                'pengguna',[m
+[32m+[m[32m                'totalLaporan',[m
+[32m+[m[32m                'totalInformasi'[m
+[32m+[m[32m            ));[m
+         }[m
+ [m
+[31m-        // 🔹 Jika staf → tampilkan dashboard staf[m
+[32m+[m[32m        // 🔹 Jika staf → tampilkan dashboard staf + data count[m
+         if ($user->role === 'staf') {[m
+             $laporans = Laporan::where('status', 'diproses')->latest()->get();[m
+[31m-            return view('staf.dashboard', compact('user', 'laporans'));[m
+[32m+[m[32m            return view('staf.dashboard', compact([m
+[32m+[m[32m                'user',[m
+[32m+[m[32m                'laporans',[m
+[32m+[m[32m                'arsip',[m
+[32m+[m[32m                'pengguna',[m
+[32m+[m[32m                'totalLaporan',[m
+[32m+[m[32m                'totalInformasi'[m
+[32m+[m[32m            ));[m
+         }[m
+ [m
+[31m-        // 🔹 Jika user biasa → tampilkan dashboard user[m
+[32m+[m[32m        // 🔹 Jika user biasa → tampilkan dashboard user (TIDAK ADA KARTU)[m
+         $laporans = Laporan::where('user_id', $user->id)->latest()->get();[m
+[32m+[m
+         return view('user.dashboard', compact('user', 'laporans'));[m
+     }[m
+ }[m
+[1mdiff --git a/app/Http/Controllers/InformasiController.php b/app/Http/Controllers/InformasiController.php[m
+[1mindex c458dc4..60a8cf1 100644[m
+[1m--- a/app/Http/Controllers/InformasiController.php[m
+[1m+++ b/app/Http/Controllers/InformasiController.php[m
+[36m@@ -13,9 +13,8 @@[m [mpublic function index()[m
+     {[m
+         $user = Auth::user();[m
+ [m
+[31m-        // ====== VIEW BERDASARKAN ROLE ======[m
+[31m-        if ($user->role == 'admin' || $user->role == 'staff') {[m
+[31m-            // ADMIN & STAFF (FULL FITUR)[m
+[32m+[m[32m        // ADMIN[m
+[32m+[m[32m        if ($user->role == 'admin') {[m
+             return view('admin.informasi', [[m
+                 'informasi' => Informasi::orderBy('created_at', 'desc')->get(),[m
+                 'countPenting' => Informasi::where('jenis', 'PENTING')->count(),[m
+[36m@@ -24,11 +23,22 @@[m [mpublic function index()[m
+             ]);[m
+         }[m
+ [m
+[31m-        // USER — HANYA MELIHAT[m
+[32m+[m[32m        // STAF[m
+[32m+[m[32m        if ($user->role == 'staf') {[m
+[32m+[m[32m            return view('staf.informasi', [[m
+[32m+[m[32m                'informasi' => Informasi::orderBy('created_at', 'desc')->get(),[m
+[32m+[m[32m                'countPenting' => Informasi::where('jenis', 'PENTING')->count(),[m
+[32m+[m[32m                'countDokumen' => Informasi::where('jenis', 'DOKUMEN')->count(),[m
+[32m+[m[32m                'countSemua' => Informasi::count(),[m
+[32m+[m[32m            ]);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        // USER (read-only)[m
+         return view('user.informasi', [[m
+             'informasi' => Informasi::orderBy('created_at', 'desc')->get()[m
+         ]);[m
+     }[m
+[32m+[m
+     public function indexUser()[m
+     {[m
+         return view('user.informasi', [[m
+[36m@@ -58,7 +68,7 @@[m [mpublic function create()[m
+     public function store(Request $request)[m
+     {[m
+         // CEK ROLE — USER TIDAK BOLEH MENAMBAH[m
+[31m-        if (!in_array(Auth::user()->role, ['admin', 'staff'])) {[m
+[32m+[m[32m        if (!in_array(Auth::user()->role, ['admin', 'staf'])) {[m
+             return abort(403, 'Anda tidak memiliki hak akses.');[m
+         }[m
+ [m
+[36m@@ -79,7 +89,7 @@[m [mpublic function store(Request $request)[m
+     // ====== EDIT (RETURN JSON UNTUK POPUP) ======[m
+     public function edit($id)[m
+     {[m
+[31m-        if (!in_array(Auth::user()->role, ['admin', 'staff'])) {[m
+[32m+[m[32m        if (!in_array(Auth::user()->role, ['admin', 'staf'])) {[m
+             return abort(403, 'Tidak boleh edit.');[m
+         }[m
+ [m
+[36m@@ -89,7 +99,7 @@[m [mpublic function edit($id)[m
+ [m
+     public function update(Request $request, $id)[m
+     {[m
+[31m-        if (!in_array(Auth::user()->role, ['admin', 'staff'])) {[m
+[32m+[m[32m        if (!in_array(Auth::user()->role, ['admin', 'staf'])) {[m
+             return abort(403, 'Tidak boleh update.');[m
+         }[m
+ [m
+[36m@@ -110,7 +120,7 @@[m [mpublic function update(Request $request, $id)[m
+ [m
+     public function destroy($id)[m
+     {[m
+[31m-        if (!in_array(Auth::user()->role, ['admin', 'staff'])) {[m
+[32m+[m[32m        if (!in_array(Auth::user()->role, ['admin', 'staf'])) {[m
+             return abort(403, 'Tidak boleh hapus.');[m
+         }[m
+ [m
+[1mdiff --git a/app/Http/Controllers/LaporanController.php b/app/Http/Controllers/LaporanController.php[m
+[1mindex 740602f..665d171 100644[m
+[1m--- a/app/Http/Controllers/LaporanController.php[m
+[1m+++ b/app/Http/Controllers/LaporanController.php[m
+[36m@@ -15,6 +15,11 @@[m [mpublic function index(Request $request)[m
+     {[m
+         $user = Auth::user();[m
+ [m
+[32m+[m[32m        $laporanBaru = Laporan::where('status', 'menunggu')->count();[m
+[32m+[m[32m        $laporanDiproses = Laporan::where('status', 'diproses')->count();[m
+[32m+[m[32m        $laporanSelesai = Laporan::where('status', 'selesai')->count();[m
+[32m+[m[32m        $totalLaporan = Laporan::count();[m
+[32m+[m
+         $filter   = $request->get('filter', 'semua');[m
+         $kategori = $request->get('kategori');[m
+         $sort     = $request->get('sort', 'desc'); // default urutan terbaru[m
+[36m@@ -54,7 +59,11 @@[m [mpublic function index(Request $request)[m
+             'user',[m
+             'filter',[m
+             'kategori',[m
+[31m-            'sort'[m
+[32m+[m[32m            'sort',[m
+[32m+[m[32m            'laporanBaru',[m
+[32m+[m[32m            'laporanDiproses',[m
+[32m+[m[32m            'laporanSelesai',[m
+[32m+[m[32m            'totalLaporan'[m
+         ));[m
+     }[m
+ [m
+[1mdiff --git a/app/Http/Controllers/PenggunaController.php b/app/Http/Controllers/PenggunaController.php[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8e48a1e[m
+[1m--- /dev/null[m
+[1m+++ b/app/Http/Controllers/PenggunaController.php[m
+[36m@@ -0,0 +1,39 @@[m
+[32m+[m[32m<?php[m
+[32m+[m
+[32m+[m[32mnamespace App\Http\Controllers;[m
+[32m+[m
+[32m+[m[32muse Illuminate\Http\Request;[m
+[32m+[m[32muse App\Models\User;[m
+[32m+[m
+[32m+[m[32mclass PenggunaController extends Controller[m
+[32m+[m[32m{[m
+[32m+[m[32m    // Menampilkan seluruh pengguna[m
+[32m+[m[32m    public function index()[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $pengguna = User::orderBy('created_at', 'desc')->get();[m
+[32m+[m[32m        return view('admin.pengguna', compact('pengguna'));[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // Update role pengguna[m
+[32m+[m[32m    public function updateRole(Request $request, $id)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $request->validate([[m
+[32m+[m[32m            'role' => 'required|in:user,staf,admin'[m
+[32m+[m[32m        ]);[m
+[32m+[m
+[32m+[m[32m        $user = User::findOrFail($id);[m
+[32m+[m[32m        $user->role = $request->role;[m
+[32m+[m[32m        $user->save();[m
+[32m+[m
+[32m+[m[32m        return back()->with('success', 'Role pengguna berhasil diperbarui.');[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // Hapus pengguna[m
+[32m+[m[32m    public function hapus($id)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        $user = User::findOrFail($id);[m
+[32m+[m[32m        $user->delete();[m
+[32m+[m
+[32m+[m[32m        return back()->with('success', 'Pengguna berhasil dihapus.');[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/public/uploads/informasi/1763300505_Screenshot 2025-01-11 203640.png b/public/uploads/informasi/1763300505_Screenshot 2025-01-11 203640.png[m
+[1mnew file mode 100644[m
+[1mindex 0000000..64d12be[m
+Binary files /dev/null and b/public/uploads/informasi/1763300505_Screenshot 2025-01-11 203640.png differ
+[1mdiff --git a/resources/views/admin/dashboard.blade.php b/resources/views/admin/dashboard.blade.php[m
+[1mindex 5e3899a..fd0e2f1 100644[m
+[1m--- a/resources/views/admin/dashboard.blade.php[m
+[1m+++ b/resources/views/admin/dashboard.blade.php[m
+[36m@@ -48,8 +48,8 @@[m [mclass="bg-white/95 backdrop-blur-sm text-gray-800 p-4 rounded-xl shadow-lg borde[m
+                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>[m
+                             </svg>[m
+                         </div>[m
+[31m-                        <p class="text-3xl font-bold mt-3">33</p>[m
+[31m-                        <p class="text-sm text-gray-600 font-semibold">Laporan Baru</p>[m
+[32m+[m[32m                        <p class="text-3xl font-bold mt-3">{{ $arsip }}</p>[m
+[32m+[m[32m                        <p class="text-sm text-gray-600 font-semibold">arsip</p>[m
+                     </div>[m
+ [m
+                     <div[m
+[36m@@ -61,8 +61,8 @@[m [mclass="bg-white/95 backdrop-blur-sm text-gray-800 p-4 rounded-xl shadow-lg borde[m
+                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>[m
+                             </svg>[m
+                         </div>[m
+[31m-                        <p class="text-3xl font-bold mt-3">66</p>[m
+[31m-                        <p class="text-sm text-gray-600 font-semibold">Dalam Diproses</p>[m
+[32m+[m[32m                        <p class="text-3xl font-bold mt-3">{{ $pengguna }}</p>[m
+[32m+[m[32m                        <p class="text-sm text-gray-600 font-semibold">pengguna</p>[m
+                     </div>[m
+ [m
+                     <div[m
+[36m@@ -74,8 +74,8 @@[m [mclass="bg-white/95 backdrop-blur-sm text-gray-800 p-4 rounded-xl shadow-lg borde[m
+                                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>[m
+                             </svg>[m
+                         </div>[m
+[31m-                        <p class="text-3xl font-bold mt-3">99</p>[m
+[31m-                        <p class="text-sm text-gray-600 font-semibold">Laporan Selesai</p>[m
+[32m+[m[32m                        <p class="text-3xl font-bold mt-3">{{ $totalLaporan }}</p>[m
+[32m+[m[32m                        <p class="text-sm text-gray-600 font-semibold">Laporan</p>[m
+                     </div>[m
+ [m
+                     <div[m
+[36m@@ -88,8 +88,8 @@[m [mclass="bg-white/95 backdrop-blur-sm text-gray-800 p-4 rounded-xl shadow-lg borde[m
+                                 </path>[m
+                             </svg>[m
+                         </div>[m
+[31m-                        <p class="text-3xl font-bold mt-3">369</p>[m
+[31m-                        <p class="text-sm text-gray-600 font-semibold">Laporan Prioritas</p>[m
+[32m+[m[32m                        <p class="text-3xl font-bold mt-3">{{ $totalInformasi }}</p>[m
+[32m+[m[32m                        <p class="text-sm text-gray-600 font-semibold">informasi</p>[m
+                     </div>[m
+ [m
+                 </div>[m
+[1mdiff --git a/resources/views/admin/informasi.blade.php b/resources/views/admin/informasi.blade.php[m
+[1mindex 962db47..b86e236 100644[m
+[1m--- a/resources/views/admin/informasi.blade.php[m
+[1m+++ b/resources/views/admin/informasi.blade.php[m
+[36m@@ -8,11 +8,11 @@[m
+ [m
+         {{-- Header Banner --}}[m
+         {{-- Kartu Banner Utama --}}[m
+[31m-        <div class="lg:col-span-3 rounded-xl shadow-lg p-6 flex items-center bg-cover bg-center"[m
+[32m+[m[32m        {{-- <div class="lg:col-span-3 rounded-xl shadow-lg p-6 flex items-center bg-cover bg-center"[m
+             style="background-image: url('https://images.unsplash.com/photo-1554224155-1696413565d3?q=80&w=2940&auto=format&fit=crop');">[m
+             <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto">[m
+ [m
+[31m-                {{-- <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto"> --}}[m
+[32m+[m[41m                [m
+                 <div class="bg-white/95 backdrop-blur-sm text-gray-800 p-4 rounded-xl shadow-lg border-l-8 border-blue-500">[m
+                     <div class="flex items-center justify-center bg-blue-100 rounded-full w-12 h-12 mx-auto">[m
+                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"[m
+[36m@@ -65,7 +65,7 @@[m [mclass="bg-white/95 backdrop-blur-sm text-gray-800 p-4 rounded-xl shadow-lg borde[m
+                 </div>[m
+ [m
+             </div>[m
+[31m-        </div>[m
+[32m+[m[32m        </div> --}}[m
+ [m
+         {{-- Spacer agar kartu tidak menabrak banner --}}[m
+         <div class="h-10"></div>[m
+[1mdiff --git a/resources/views/admin/laporan.blade.php b/resources/views/admin/laporan.blade.php[m
+[1mindex 9a24dc1..94960d9 100644[m
+[1m--- a/resources/views/admin/laporan.blade.php[m
+[1m+++ b/resources/views/admin/laporan.blade.php[m
+[36m@@ -18,8 +18,8 @@[m
+                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>[m
+                     </svg>[m
+                 </div>[m
+[31m-                <p class="text-3xl font-bold mt-3">33</p>[m
+[31m-                <p class="text-sm text-gray-600 font-semibold">Laporan Baru</p>[m
+[32m+[m[32m                <p class="text-3xl font-bold mt-3">{{ $totalLaporan }}</p>[m
+[32m+[m[32m                <p class="text-sm text-gray-600 font-semibold">Laporan</p>[m
+             </div>[m
+ [m
+             <div class="bg-white/95 backdrop-blur-sm text-gray-800 p-4 rounded-xl shadow-lg border-l-8 border-yellow-500">[m
+[36m@@ -30,7 +30,7 @@[m
+                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>[m
+                     </svg>[m
+                 </div>[m
+[31m-                <p class="text-3xl font-bold mt-3">66</p>[m
+[32m+[m[32m                <p class="text-3xl font-bold mt-3">{{ $laporanBaru }}</p>[m
+                 <p class="text-sm text-gray-600 font-semibold">Dalam Diproses</p>[m
+             </div>[m
+ [m
+[36m@@ -42,8 +42,8 @@[m
+                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>[m
+                     </svg>[m
+                 </div>[m
+[31m-                <p class="text-3xl font-bold mt-3">99</p>[m
+[31m-                <p class="text-sm text-gray-600 font-semibold">Laporan Selesai</p>[m
+[32m+[m[32m                <p class="text-3xl font-bold mt-3">{{ $laporanDiproses }}</p>[m
+[32m+[m[32m                <p class="text-sm text-gray-600 font-semibold">Laporan Diperoses</p>[m
+             </div>[m
+ [m
+             <div class="bg-white/95 backdrop-blur-sm text-gray-800 p-4 rounded-xl shadow-lg border-l-8 border-red-500">[m
+[36m@@ -55,8 +55,8 @@[m
+                         </path>[m
+                     </svg>[m
+                 </div>[m
+[31m-                <p class="text-3xl font-bold mt-3">369</p>[m
+[31m-                <p class="text-sm text-gray-600 font-semibold">Laporan Prioritas</p>[m
+[32m+[m[32m                <p class="text-3xl font-bold mt-3">{{ $laporanSelesai }}</p>[m
+[32m+[m[32m                <p class="text-sm text-gray-600 font-semibold">Laporan Selesai</p>[m
+             </div>[m
+ [m
+         </div>[m
+[1mdiff --git a/resources/views/admin/pengguna.blade.php b/resources/views/admin/pengguna.blade.php[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bbb1598[m
+[1m--- /dev/null[m
+[1m+++ b/resources/views/admin/pengguna.blade.php[m
+[36m@@ -0,0 +1,71 @@[m
+[32m+[m[32m@extends('admin.template')[m
+[32m+[m
+[32m+[m[32m@section('title', 'Profil Saya')[m
+[32m+[m
+[32m+[m[32m@section('content')[m
+[32m+[m[32m    <div class="p-6">[m
+[32m+[m
+[32m+[m[32m        {{-- Notifikasi sukses --}}[m
+[32m+[m[32m        @if (session('success'))[m
+[32m+[m[32m            <div class="mb-4 p-3 bg-green-600 text-black rounded-lg">[m
+[32m+[m[32m                {{ session('success') }}[m
+[32m+[m[32m            </div>[m
+[32m+[m[32m        @endif[m
+[32m+[m
+[32m+[m[32m        <h2 class="text-2xl font-bold mb-6 text-black">Manajemen Pengguna</h2>[m
+[32m+[m
+[32m+[m[32m        <div class="overflow-x-auto bg-white/10 backdrop-blur-lg p-4 rounded-lg shadow">[m
+[32m+[m[32m            <table class="w-full text-black">[m
+[32m+[m[32m                <thead>[m
+[32m+[m[32m                    <tr class="border-b border-white/20">[m
+[32m+[m[32m                        <th class="py-3 text-left">#</th>[m
+[32m+[m[32m                        <th class="py-3 text-left">Nama</th>[m
+[32m+[m[32m                        <th class="py-3 text-left">Email</th>[m
+[32m+[m[32m                        <th class="py-3 text-left">Role</th>[m
+[32m+[m[32m                        <th class="py-3 text-left">Aksi</th>[m
+[32m+[m[32m                    </tr>[m
+[32m+[m[32m                </thead>[m
+[32m+[m
+[32m+[m[32m                <tbody>[m
+[32m+[m[32m                    @foreach ($pengguna as $index => $user)[m
+[32m+[m[32m                        <tr class="border-b border-white/10">[m
+[32m+[m[32m                            <td class="py-3">{{ $index + 1 }}</td>[m
+[32m+[m[32m                            <td class="py-3">{{ $user->name }}</td>[m
+[32m+[m[32m                            <td class="py-3">{{ $user->email }}</td>[m
+[32m+[m
+[32m+[m[32m                            <td class="py-3">[m
+[32m+[m[32m                                <form action="{{ route('admin.pengguna.updateRole', $user->id) }}" method="POST">[m
+[32m+[m[32m                                    @csrf[m
+[32m+[m[32m                                    @method('PUT')[m
+[32m+[m[32m                                    <select name="role" onchange="this.form.submit()"[m
+[32m+[m[32m                                        class="bg-white/20 text-black px-2 py-1 rounded">[m
+[32m+[m[32m                                        <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>User</option>[m
+[32m+[m[32m                                        <option value="staf" {{ $user->role === 'staf' ? 'selected' : '' }}>Staf</option>[m
+[32m+[m[32m                                        <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin[m
+[32m+[m[32m            

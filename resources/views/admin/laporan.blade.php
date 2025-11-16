@@ -18,8 +18,8 @@
                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
                 </div>
-                <p class="text-3xl font-bold mt-3">33</p>
-                <p class="text-sm text-gray-600 font-semibold">Laporan Baru</p>
+                <p class="text-3xl font-bold mt-3">{{ $totalLaporan }}</p>
+                <p class="text-sm text-gray-600 font-semibold">Laporan</p>
             </div>
 
             <div class="bg-white/95 backdrop-blur-sm text-gray-800 p-4 rounded-xl shadow-lg border-l-8 border-yellow-500">
@@ -30,7 +30,7 @@
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <p class="text-3xl font-bold mt-3">66</p>
+                <p class="text-3xl font-bold mt-3">{{ $laporanBaru }}</p>
                 <p class="text-sm text-gray-600 font-semibold">Dalam Diproses</p>
             </div>
 
@@ -42,8 +42,8 @@
                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <p class="text-3xl font-bold mt-3">99</p>
-                <p class="text-sm text-gray-600 font-semibold">Laporan Selesai</p>
+                <p class="text-3xl font-bold mt-3">{{ $laporanDiproses }}</p>
+                <p class="text-sm text-gray-600 font-semibold">Laporan Diperoses</p>
             </div>
 
             <div class="bg-white/95 backdrop-blur-sm text-gray-800 p-4 rounded-xl shadow-lg border-l-8 border-red-500">
@@ -55,8 +55,8 @@
                         </path>
                     </svg>
                 </div>
-                <p class="text-3xl font-bold mt-3">369</p>
-                <p class="text-sm text-gray-600 font-semibold">Laporan Prioritas</p>
+                <p class="text-3xl font-bold mt-3">{{ $laporanSelesai }}</p>
+                <p class="text-sm text-gray-600 font-semibold">Laporan Selesai</p>
             </div>
 
         </div>

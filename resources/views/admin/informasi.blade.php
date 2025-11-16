@@ -8,11 +8,11 @@
 
         {{-- Header Banner --}}
         {{-- Kartu Banner Utama --}}
-        <div class="lg:col-span-3 rounded-xl shadow-lg p-6 flex items-center bg-cover bg-center"
+        {{-- <div class="lg:col-span-3 rounded-xl shadow-lg p-6 flex items-center bg-cover bg-center"
             style="background-image: url('https://images.unsplash.com/photo-1554224155-1696413565d3?q=80&w=2940&auto=format&fit=crop');">
             <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto">
 
-                {{-- <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto"> --}}
+                
                 <div class="bg-white/95 backdrop-blur-sm text-gray-800 p-4 rounded-xl shadow-lg border-l-8 border-blue-500">
                     <div class="flex items-center justify-center bg-blue-100 rounded-full w-12 h-12 mx-auto">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -65,7 +65,7 @@
                 </div>
 
             </div>
-        </div>
+        </div> --}}
 
         {{-- Spacer agar kartu tidak menabrak banner --}}
         <div class="h-10"></div>
