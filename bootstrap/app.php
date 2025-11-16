@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\AutoTranslate;
+use App\Http\Middleware\RoleMiddleware; // <--- tambahkan ini
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,12 +12,22 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Global middleware
-        $middleware->append(AutoTranslate::class);
+        $middleware->group('web', [
+            \App\Http\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \App\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
 
-        // kalau mau khusus web group:
-        // $middleware->group('web', [AutoTranslate::class]);
+        // 🟢 Daftarkan alias middleware kustom kamu di sini
+        $middleware->alias([
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+        ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->create();

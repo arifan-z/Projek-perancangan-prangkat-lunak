@@ -528,7 +528,7 @@
                         </div>
                         <h3 class="text-xl font-bold text-gray-800 mb-2">Informasi Akademik</h3>
                         <p class="text-gray-500 mb-6">Akses info penting prodi TI</p>
-                        <a href="#"
+                        <a href="/user/dashboard-user"
                             class="w-full bg-emerald-800 text-white font-semibold py-3 px-6 rounded-lg hover:bg-emerald-700 transition-colors duration-300">
                             Lihat Sekarang
                         </a>
