@@ -10,7 +10,8 @@
 
 </head>
 
-<body class="bg-gray-100 flex flex-col min-h-screen">
+<body class="bg-gray-100 flex flex-col min-h-screen" x-data="{ open: false }">
+
 
     {{-- Memanggil Header --}}
     @include('layout.header')
@@ -124,99 +125,154 @@
                     </div>
                 </div>
 
-                {{-- Di aplikasi nyata, Anda akan menggunakan @foreach loop di sini --}}
+
+                {{-- LIST LAPORAN --}}
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div
-                        class="relative bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-blue-500"></div>
-                        <div class="pl-8 pr-6 py-6">
-                            <div class="flex justify-between items-start">
-                                <p class="text-sm text-gray-500">ID Laporan: <span
-                                        class="font-semibold text-gray-700">#2025-000123</span></p>
-                                <span
-                                    class="text-xs font-bold px-3 py-1 bg-blue-100 text-blue-800 rounded-full">Baru</span>
-                            </div>
-                            <h3 class="font-bold text-lg text-gray-900 mt-2">Gangguan Internet Ruang 4 INF</h3>
-                            <div class="flex justify-between items-center mt-4">
-                                <p class="text-sm text-gray-500">Tanggal Diajukan: 27 April 2025</p>
-                                <a href="#"
-                                    class="text-sm font-medium bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg transition">Lihat
-                                    Detail</a>
+                    @foreach ($laporans as $laporan)
+                        <div class="relative bg-white rounded-lg shadow-sm hover:shadow-lg overflow-hidden transition">
+
+                            @php
+                                $color =
+                                    [
+                                        'menunggu' => 'blue-500',
+                                        'diproses' => 'yellow-500',
+                                        'prioritas' => 'red-500',
+                                        'selesai' => 'gray-500',
+                                    ][$laporan->status] ?? 'gray-500';
+                            @endphp
+
+                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-{{ $color }}"></div>
+
+                            <div class="pl-8 pr-6 py-6">
+                                <div class="flex justify-between items-start">
+
+                                    <p class="text-sm text-gray-500">
+                                        ID Laporan:
+                                        <span class="font-semibold text-gray-700">#{{ $laporan->id }}</span>
+                                    </p>
+
+                                    @php
+                                        $badge = [
+                                            'menunggu' => 'bg-blue-100 text-blue-800',
+                                            'diproses' => 'bg-yellow-100 text-yellow-800',
+                                            'prioritas' => 'bg-red-100 text-red-800',
+                                            'selesai' => 'bg-gray-200 text-gray-800',
+                                        ];
+                                    @endphp
+
+                                    <span
+                                        class="text-xs font-bold px-3 py-1 rounded-full {{ $badge[$laporan->status] }}">
+                                        {{ ucfirst($laporan->status) }}
+                                    </span>
+                                </div>
+
+                                <h3 class="font-bold text-lg mt-2 text-gray-900">
+                                    {{ Str::limit($laporan->judul, 80) }}
+                                </h3>
+
+                                <p class="text-gray-600 mt-2 text-sm">
+                                    {{ Str::limit($laporan->isi, 120) }}
+                                </p>
+
+                                <div class="flex justify-between items-center mt-4">
+                                    <p class="text-sm text-gray-500">
+                                        {{ \Carbon\Carbon::parse($laporan->tanggal_lapor)->format('d F Y') }}
+                                    </p>
+
+                                    <button onclick="openDetailModal(this)" data-id="{{ $laporan->id }}"
+                                        data-judul="{{ $laporan->judul }}" data-isi="{{ $laporan->isi }}"
+                                        data-status="{{ $laporan->status }}"
+                                        data-pelapor="{{ $laporan->user->name }}"
+                                        data-tanggal="{{ $laporan->tanggal_lapor }}"
+                                        data-gambar="{{ asset('uploads/laporan/' . $laporan->gambar) }}"
+                                        class="text-sm font-medium bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg">
+                                        Lihat Detail
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
-                    </div>
-
-                    <div
-                        class="relative bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-yellow-500"></div>
-                        <div class="pl-8 pr-6 py-6">
-                            <div class="flex justify-between items-start">
-                                <p class="text-sm text-gray-500">ID Laporan: <span
-                                        class="font-semibold text-gray-700">#2025-000124</span></p>
-                                <span
-                                    class="text-xs font-bold px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full">Diproses</span>
-                            </div>
-                            <h3 class="font-bold text-lg text-gray-900 mt-2">Pintu Kamar Mandi Rusak Gedung Informatika
-                            </h3>
-                            <div class="flex justify-between items-center mt-4">
-                                <p class="text-sm text-gray-500">Tanggal Diajukan: 27 Juli 2025</p>
-                                <a href="#"
-                                    class="text-sm font-medium bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg transition">Lihat
-                                    Detail</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="relative bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-red-500"></div>
-                        <div class="pl-8 pr-6 py-6">
-                            <div class="flex justify-between items-start">
-                                <p class="text-sm text-gray-500">ID Laporan: <span
-                                        class="font-semibold text-gray-700">#2025-000123</span></p>
-                                <span
-                                    class="text-xs font-bold px-3 py-1 bg-red-100 text-red-800 rounded-full">Prioritas</span>
-                            </div>
-                            <h3 class="font-bold text-lg text-gray-900 mt-2">Gangguan Internet Ruang 4 INF</h3>
-                            <div class="flex justify-between items-center mt-4">
-                                <p class="text-sm text-gray-500">Tanggal Diajukan: 27 April 2025</p>
-                                <a href="#"
-                                    class="text-sm font-medium bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg transition">Lihat
-                                    Detail</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="relative bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-gray-500"></div>
-                        <div class="pl-8 pr-6 py-6">
-                            <div class="flex justify-between items-start">
-                                <p class="text-sm text-gray-500">ID Laporan: <span
-                                        class="font-semibold text-gray-700">#2025-000123</span></p>
-                                <span
-                                    class="text-xs font-bold px-3 py-1 bg-gray-200 text-gray-800 rounded-full">Selesai</span>
-                            </div>
-                            <h3 class="font-bold text-lg text-gray-900 mt-2">Gangguan Internet Ruang 4 INF</h3>
-                            <div class="flex justify-between items-center mt-4">
-                                <p class="text-sm text-gray-500">Tanggal Diajukan: 27 April 2025</p>
-                                <a href="#"
-                                    class="text-sm font-medium bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg transition">Lihat
-                                    Detail</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Tambahkan lebih banyak card laporan di sini --}}
+                    @endforeach
                 </div>
+
+                @if ($laporans->isEmpty())
+                    <p class="text-center text-gray-600">Belum ada laporan.</p>
+                @endif
             </div>
         </div>
+
     </main>
 
-    {{-- Memanggil Footer --}}
     @include('layout.footer')
 
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- MODAL DETAIL -->
+    <div id="detailModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+
+        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-xl relative">
+
+            <h2 class="text-xl font-semibold mb-3">Detail Laporan</h2>
+
+            <div class="space-y-2">
+                <p><strong>Judul:</strong> <span id="modalJudul"></span></p>
+
+                <div>
+                    <p class="font-medium">Isi:</p>
+                    <p id="modalIsi" class="text-gray-700"></p>
+                </div>
+
+                <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                <p><strong>Pelapor:</strong> <span id="modalPelapor"></span></p>
+                <p><strong>Tanggal:</strong> <span id="modalTanggal"></span></p>
+
+                <div>
+                    <p><strong>Gambar:</strong></p>
+
+                    <img id="modalGambar" class="w-full max-h-96 object-contain mt-2 border rounded hidden"
+                        alt="Gambar Laporan"
+                        onerror="this.classList.add('hidden'); document.getElementById('gambarFallback').classList.remove('hidden');">
+
+                    <p id="gambarFallback" class="hidden text-gray-500 text-sm">
+                        Tidak ada gambar atau gagal dimuat.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tombol Close kanan bawah -->
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeDetailModal()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+    {{-- SCRIPT --}}
+    <script>
+        function openDetailModal(button) {
+            document.getElementById('modalJudul').textContent = button.dataset.judul;
+            document.getElementById('modalIsi').textContent = button.dataset.isi;
+            document.getElementById('modalStatus').textContent = button.dataset.status;
+            document.getElementById('modalPelapor').textContent = button.dataset.pelapor;
+            document.getElementById('modalTanggal').textContent = button.dataset.tanggal;
+
+            let img = document.getElementById('modalGambar');
+
+            if (button.dataset.gambar) {
+                img.src = button.dataset.gambar;
+                img.classList.remove('hidden');
+            } else {
+                img.classList.add('hidden');
+            }
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+    </script>
 </body>
 
 </html>

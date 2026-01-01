@@ -266,4 +266,10 @@ class LaporanController extends Controller
             }
         }
     }
+    public function status()
+    {
+        $laporans = Laporan::orderBy('created_at', 'desc')->get();
+
+        return view('status', compact('laporans'));
+    }
 }

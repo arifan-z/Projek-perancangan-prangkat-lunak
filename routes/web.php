@@ -21,6 +21,13 @@ use App\Http\Controllers\PenggunaController;
 Route::get('/', [PageController::class, 'beranda'])->name('beranda');
 Route::get('/status', [PageController::class, 'status'])->name('status');
 Route::get('/informasi', [PageController::class, 'informasi'])->name('informasi');
+Route::get('/', [InformasiController::class, 'beranda'])->name('beranda');
+Route::get('/informasi', [InformasiController::class, 'informasi'])->name('informasi');
+Route::get('/informasi/{id}', [InformasiController::class, 'show']);
+Route::get('/status', [LaporanController::class, 'status'])->name('status');
+
+
+
 
 /*
 |--------------------------------------------------------------------------

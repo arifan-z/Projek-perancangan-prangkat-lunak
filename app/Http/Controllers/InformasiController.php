@@ -129,4 +129,16 @@ class InformasiController extends Controller
         return redirect()->route('admin.informasi.index')
             ->with('success', 'Informasi berhasil dihapus');
     }
+    public function beranda()
+    {
+        return view('beranda', [
+            'informasi' => Informasi::orderBy('created_at', 'desc')->take(6)->get()
+        ]);
+    }
+    public function informasi()
+    {
+        return view('informasi', [
+            'informasi' => Informasi::orderBy('created_at', 'desc')->take(6)->get()
+        ]);
+    }
 }
